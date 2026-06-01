@@ -1,161 +1,498 @@
-
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>L-Box Generator - 薯條AI專業版</title>
+    <title>L型盒子展開圖 - 薯條AI專業版</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; margin: 0; height: 100vh; background: #eef2f7; color: #333; }
-        #controls { width: 380px; background: #fff; padding: 25px; box-shadow: 4px 0 15px rgba(0,0,0,0.1); overflow-y: auto; z-index: 10; display: flex; flex-direction: column; }
-        #viewer { flex-grow: 1; display: flex; align-items: center; justify-content: center; padding: 40px; position: relative; overflow: auto; background-image: radial-gradient(#d1d1d1 1px, transparent 1px); background-size: 20px 20px; }
-        .control-group { margin-bottom: 18px; }
-        label { display: block; font-size: 13px; font-weight: 600; color: #555; margin-bottom: 6px; }
-        input { width: 100%; padding: 10px; box-sizing: border-box; border: 2px solid #ddd; border-radius: 6px; transition: border-color 0.2s; font-size: 14px; }
-        input:focus { border-color: #4a90e2; outline: none; }
-        h2 { margin-top: 0; color: #2c3e50; font-size: 22px; display: flex; align-items: center; gap: 10px; }
-        .hint { font-size: 12px; color: #888; margin-bottom: 20px; line-height: 1.4; }
-        svg { background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-radius: 4px; transition: all 0.3s ease; }
-        .cut-line { fill: none; stroke: #000; stroke-width: 1.5; stroke-linejoin: round; }
-        .finger-fill { fill: #f9f9f9; stroke: #ccc; stroke-width: 0.5; }
-        .label-text { font-size: 12px; fill: #aaa; font-family: monospace; }
-        .btn-download { background: #4a90e2; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: 600; margin-top: 20px; transition: background 0.2s; }
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            background: #e8ecef;
+            overflow: hidden;
+        }
+        /* === 左側控制面板 === */
+        #controls {
+            width: 340px;
+            min-width: 340px;
+            background: #fff;
+            padding: 20px;
+            overflow-y: auto;
+            border-right: 1px solid #ddd;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.08);
+        }
+        #viewer {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-image: radial-gradient(#c0c0c0 1px, transparent 1px);
+            background-size: 20px 20px;
+            overflow: auto;
+        }
+        h2 {
+            margin: 0 0 5px 0;
+            font-size: 18px;
+            color: #222;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .subtitle {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 15px;
+        }
+        hr { border: none; border-top: 1px solid #eee; margin: 15px 0; }
+        .section-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #4a90e2;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        .control-group {
+            margin-bottom: 14px;
+        }
+        label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 5px;
+        }
+        .param-hint {
+            font-size: 10px;
+            font-weight: 400;
+            color: #aaa;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1.5px solid #ddd;
+            border-radius: 5px;
+            font-size: 13px;
+            transition: border-color 0.2s;
+        }
+        input[type="number"]:focus {
+            border-color: #4a90e2;
+            outline: none;
+        }
+        /* 滑桿增強 */
+        input[type="range"] {
+            width: 100%;
+            margin-top: 4px;
+            cursor: pointer;
+        }
+        .value-display {
+            font-size: 12px;
+            font-weight: 700;
+            color: #4a90e2;
+            min-width: 40px;
+            text-align: right;
+        }
+        .row-inputs {
+            display: flex;
+            gap: 8px;
+        }
+        .row-inputs .control-group { flex: 1; }
+        .btn-download {
+            width: 100%;
+            background: #4a90e2;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
         .btn-download:hover { background: #357abd; }
+        .info-box {
+            background: #f8f9fa;
+            border-left: 3px solid #4a90e2;
+            padding: 10px 12px;
+            font-size: 11px;
+            color: #666;
+            border-radius: 0 4px 4px 0;
+            line-height: 1.6;
+        }
+        .info-box strong { color: #333; }
+        svg {
+            background: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+            border-radius: 4px;
+            max-width: 100%;
+            max-height: 100%;
+        }
+        /* SVG 樣式 */
+        .cut-line { fill: none; stroke: #000; stroke-width: 1.2; stroke-linejoin: round; }
+        .finger-line { fill: none; stroke: #e74c3c; stroke-width: 0.6; stroke-dasharray: 4,2; }
+        .dimension-line { fill: none; stroke: #4a90e2; stroke-width: 0.5; }
+        .label-text { font-size: 10px; fill: #888; font-family: monospace; }
+        .label-main { font-size: 11px; fill: #333; font-weight: 600; font-family: sans-serif; }
+        .wall-fill { fill: #fafafa; }
+        .finger-fill { fill: #fff0f0; }
     </style>
 </head>
 <body>
 
 <div id="controls">
-    <h2>📦 L型盒子生成器</h2>
-    <p class="hint">薯條AI 專屬設計：無蓋 L 型展開圖。<br>數據變動時，右側圖形會即時更新。</p>
-    <hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 20px;">
-    
-    <div class="control-group">
-        <label>總長 X (mm)</label>
-        <input type="number" id="x" value="200" oninput="draw()">
+    <h2>📦 L型盒子展開圖</h2>
+    <p class="subtitle">無蓋 L 型 · 鳩尾榫接合 · 即時 preview</p>
+
+    <div class="section-title">📐 幾何尺寸</div>
+
+    <div class="row-inputs">
+        <div class="control-group">
+            <label>X (總長) <span class="value-display" id="x-val">200</span></label>
+            <input type="number" id="x" value="200" min="50" max="1000">
+        </div>
+        <div class="control-group">
+            <label>Y (主寬) <span class="value-display" id="y-val">100</span></label>
+            <input type="number" id="y" value="100" min="30" max="500">
+        </div>
     </div>
-    <div class="control-group">
-        <label>主寬 Y (mm)</label>
-        <input type="number" id="y" value="100" oninput="draw()">
+
+    <div class="row-inputs">
+        <div class="control-group">
+            <label>W (回折寬) <span class="value-display" id="w-val">80</span></label>
+            <input type="number" id="w" value="80" min="20" max="300">
+        </div>
+        <div class="control-group">
+            <label>H (高度) <span class="value-display" id="h-val">50</span></label>
+            <input type="number" id="h" value="50" min="20" max="300">
+        </div>
     </div>
-    <div class="control-group">
-        <label>L型回折寬 W (mm)</label>
-        <input type="number" id="w" value="100" oninput="draw()">
+
+    <hr>
+    <div class="section-title">🪵 板材參數</div>
+
+    <div class="row-inputs">
+        <div class="control-group">
+            <label>T 板厚 (mm)</label>
+            <input type="number" id="t" value="3" min="1" max="20">
+        </div>
+        <div class="control-group">
+            <label>間隙 (mm)</label>
+            <input type="number" id="gap" value="0.2" min="0" max="1" step="0.05">
+        </div>
     </div>
-    <div class="control-group">
-        <label>盒子高度 H (mm)</label>
-        <input type="number" id="h" value="50" oninput="draw()">
+
+    <hr>
+    <div class="section-title">🪚 鳩尾榫設定</div>
+
+    <div class="info-box">
+        <strong>名詞說明：</strong><br>
+        <strong>鳩尾 (Finger/Dovetail)</strong>：木板上鋸出的凸出齒片，插入相鄰板的凹槽中，形成牢固的榫接。<br>
+        <strong>槽寬 (Finger Width)</strong>：每個鳩尾齒的寬度（雷射切割時建議 ≥ 2mm）。<br>
+        <strong>齒深 (Finger Depth)</strong>：鳩尾齒凸出的深度，須 ≦ 板厚。
     </div>
-    <div class="control-group">
-        <label>板材厚度 T (mm)</label>
-        <input type="number" id="t" value="3" oninput="draw()">
+
+    <div class="row-inputs">
+        <div class="control-group">
+            <label>鳩尾槽寬 (mm)</label>
+            <input type="number" id="fw" value="6" min="1" max="30">
+        </div>
+        <div class="control-group">
+            <label>鳩尾齒深 (mm)</label>
+            <input type="number" id="fd" value="4" min="1" max="15">
+        </div>
     </div>
-    <div class="control-group">
-        <label>手指寬度 F (mm)</label>
-        <input type="number" id="f" value="3" oninput="draw()">
+
+    <div class="control-group" style="margin-top:8px;">
+        <label>鳩尾樣式</label>
+        <select id="joint-style" style="width:100%; padding:8px; border:1.5px solid #ddd; border-radius:5px; font-size:13px;">
+            <option value="dovetail">鳩尾榫 (Dovetail) - 經典梯形齒</option>
+            <option value="rectfinger">方正指榫 (Rect Finger) - 直齒矩形</option>
+            <option value="comb">梳齒 (Comb) - 等寬交替齒槽</option>
+        </select>
     </div>
-    
-    <button class="btn-download" onclick="downloadSVG()">下載 SVG 檔案</button>
-    
-    <div style="margin-top: 30px; font-size: 12px; color: #777; border-top: 1px solid #eee; padding-top: 20px;">
-        <strong>💡 使用提示：</strong><br>
-        1. 調整數值後可直接下載 SVG 到激光切割機。<br>
-        2. 板材厚度 T 必須與手指寬度 F 保持一致才能完美接合。<br>
-        3. 黑色線條 = 切割線。
+
+    <div class="control-group">
+        <label>
+            <input type="checkbox" id="show-dimension" checked style="width:auto; margin-right:6px;">
+            顯示尺寸標註
+        </label>
+    </div>
+
+    <button class="btn-download" onclick="downloadSVG()">⬇️ 下載 SVG 展開圖</button>
+
+    <div class="info-box" style="margin-top: 15px;">
+        <strong>💡 使用說明：</strong><br>
+        ① 調整參數即時 preview 展開圖<br>
+        ② 確認板材厚度 T 與間隙匹配<br>
+        ③ 鳩尾齒寬建議為板厚的 1.5~2 倍<br>
+        ④ 下載 SVG 匯入 LightBurn / Inkscape
     </div>
 </div>
 
 <div id="viewer">
-    <svg id="svg-canvas" width="1000" height="1000"></svg>
+    <svg id="canvas" width="1200" height="900"></svg>
 </div>
 
 <script>
-function draw() {
-    const x = parseFloat(document.getElementById('x').value) || 0;
-    const y = parseFloat(document.getElementById('y').value) || 0;
-    const w = parseFloat(document.getElementById('w').value) || 0;
-    const h = parseFloat(document.getElementById('h').value) || 0;
-    const t = parseFloat(document.getElementById('t').value) || 0;
-    const f = parseFloat(document.getElementById('f').value) || 0;
+// === 座標系統輔助 ===
+function moveTo(g, x, y) {
+    return `M ${fmt(x)} ${fmt(y)}`;
+}
+function lineTo(g, x, y) {
+    return ` L ${fmt(x)} ${fmt(y)}`;
+}
+function fmt(v) { return v.toFixed(1); }
 
-    const svg = document.getElementById('svg-canvas');
+// === 繪製多邊形 ===
+function polyline(g, points, close = true) {
+    if (points.length === 0) return '';
+    let d = moveTo(g, points[0][0], points[0][1]);
+    for (let i = 1; i < points.length; i++) {
+        d += lineTo(g, points[i][0], points[i][1]);
+    }
+    if (close) d += ' Z';
+    return d;
+}
+
+// === 繪製牆面 + 鳩尾邊緣 ===
+// edgeType: 'A' = 鳩尾邊, 'B' = 對應凹槽邊, 'C' = 直切邊
+function drawWallWithFingers(g, svg, wallName, points, edgeFingers, edgeType, labelOffset = [5, 15]) {
+    const { x: dx, y: dy } = labelOffset;
+    
+    // 主多邊形
+    const wallPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    wallPath.setAttribute('d', polyline(g, points));
+    wallPath.setAttribute('class', 'wall-fill cut-line');
+    svg.appendChild(wallPath);
+
+    // 標籤
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', points[0][0] + dx);
+    text.setAttribute('y', points[0][1] + dy);
+    text.setAttribute('class', 'label-main');
+    text.textContent = wallName;
+    svg.appendChild(text);
+
+    // 繪製鳩尾切割線
+    if (edgeFingers && edgeFingers.length > 0) {
+        edgeFingers.forEach(f => {
+            const fp = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            fp.setAttribute('d', polyline(g, f.points));
+            fp.setAttribute('class', 'finger-fill cut-line');
+            svg.appendChild(fp);
+        });
+    }
+}
+
+// === 計算鳩尾邊緣的手指切割線 ===
+// wallLength: 牆的長度
+// wallHeight: 牆的高度
+// fingerWidth: 每個鳩尾齒的寬度
+// fingerDepth: 鳩尾齒凸出的深度
+// side: 哪一邊 'bottom', 'top', 'left', 'right'
+// type: 'male' = 凸出鳩尾, 'female' = 凹槽
+function calcFingerEdge(wallLength, wallHeight, fingerWidth, fingerDepth, side, type, offset = 0) {
+    const fingers = [];
+    const count = Math.floor(wallLength / fingerWidth);
+    const startX = offset;
+    const startY = offset;
+
+    if (side === 'bottom' || side === 'top') {
+        for (let i = 0; i < count; i++) {
+            const x1 = startX + i * fingerWidth;
+            const x2 = x1 + fingerWidth * 0.5;
+            if (type === 'male') {
+                // 凸出齒向下
+                fingers.push({
+                    points: [
+                        [x1, wallHeight],
+                        [x2, wallHeight],
+                        [x2, wallHeight + fingerDepth],
+                        [x1 + fingerWidth * 0.3, wallHeight + fingerDepth * 0.6],
+                        [x1, wallHeight + fingerDepth * 0.3]
+                    ]
+                });
+            } else {
+                // 凹槽向下
+                fingers.push({
+                    points: [
+                        [x1, wallHeight],
+                        [x2, wallHeight],
+                        [x2, wallHeight - fingerDepth],
+                        [x1 + fingerWidth * 0.3, wallHeight - fingerDepth * 0.6],
+                        [x1, wallHeight - fingerDepth * 0.3]
+                    ]
+                });
+            }
+        }
+    } else {
+        for (let i = 0; i < count; i++) {
+            const y1 = startY + i * fingerWidth;
+            const y2 = y1 + fingerWidth * 0.5;
+            if (type === 'male') {
+                fingers.push({
+                    points: [
+                        [wallLength, y1],
+                        [wallLength, y2],
+                        [wallLength + fingerDepth, y2],
+                        [wallLength + fingerDepth * 0.6, y1 + fingerWidth * 0.3],
+                        [wallLength + fingerDepth * 0.3, y1]
+                    ]
+                });
+            } else {
+                fingers.push({
+                    points: [
+                        [wallLength, y1],
+                        [wallLength, y2],
+                        [wallLength - fingerDepth, y2],
+                        [wallLength - fingerDepth * 0.6, y1 + fingerWidth * 0.3],
+                        [wallLength - fingerDepth * 0.3, y1]
+                    ]
+                });
+            }
+        }
+    }
+    return fingers;
+}
+
+// === 主要繪圖函數 ===
+function draw() {
+    const x  = parseFloat(document.getElementById('x').value)  || 0;
+    const y  = parseFloat(document.getElementById('y').value)  || 0;
+    const w  = parseFloat(document.getElementById('w').value)  || 0;
+    const h  = parseFloat(document.getElementById('h').value)  || 0;
+    const t  = parseFloat(document.getElementById('t').value)  || 0;
+    const fw = parseFloat(document.getElementById('fw').value) || 0;
+    const fd = parseFloat(document.getElementById('fd').value) || 0;
+    const showDim = document.getElementById('show-dimension').checked;
+
+    const svg = document.getElementById('canvas');
     svg.innerHTML = '';
 
-    // 座標系: (0,0) 是左上
-    // 零件 1: 底板 (L-Shape)
-    // 頂點: (0,0) -> (x,0) -> (x,y) -> (x-w,y) -> (x-w,y+w) -> (0,y+w) -> Close
+    // === 底板 (L-Shape) ===
+    // 輪廓：6個頂點構成L形
+    // ①(0,0) → ②(x,0) → ③(x,y) → ④(x-w,y) → ⑤(x-w,y+w) → ⑥(0,y+w)
     const basePoints = [
         [0, 0], [x, 0], [x, y], [x-w, y], [x-w, y+w], [0, y+w]
     ];
-    createPolygon(svg, basePoints, "底板", 0, 0);
 
-    // 零件 2: 後長牆 (Back Wall) - x * h
-    // 位置在底板上方
-    const backWallPoints = [
-        [0, 0], [x, 0], [x, h], [0, h]
+    // 牆面位置墊開（向外偏移一個板厚）
+    const P = t + 2; // 偏移量
+    
+    // === 牆1：後長牆 (X方向, 高度H, 沿著底板上方邊緣) ===
+    const wall1Points = [
+        [-P, -h-P], [x+P, -h-P], [x+P, -P], [-P, -P]
     ];
-    createPolygon(svg, backWallPoints, "後長牆", 0, -h);
+    drawWallWithFingers({}, svg, `後長牆 ${x}×${h}`, wall1Points, [], 'A', [-P+5, -P+15]);
 
-    // 零件 3: 左側牆 (Left Wall) - (y+w) * h
-    // 位置在底板左側（這裡為了展開圖方便，放在底板下方）
-    const leftWallPoints = [
-        [0, 0], [y+w, 0], [y+w, h], [0, h]
+    // === 牆2：右側牆 (Y方向, 高度H, 沿著底板右側邊緣) ===
+    const wall2Points = [
+        [x+P, -P], [x+P, y+P], [x+P+h, y+P], [x+P+h, -P]
     ];
-    createPolygon(svg, leftWallPoints, "左側牆", 0, y+w);
+    drawWallWithFingers({}, svg, `右側牆 ${y}×${h}`, wall2Points, [], 'A', [x+P+5, -P+15]);
 
-    // 零件 4: L型回折牆 (Inner Wall) - w * h
-    const innerWallPoints = [
-        [0, 0], [w, 0], [w, h], [0, h]
+    // === 牆3：前端短牆 (X-w方向, 高度H, 沿著底板前端邊緣) ===
+    const wall3Points = [
+        [-P, y+w+P], [x-w-P, y+w+P], [x-w-P, y+w+h+P], [-P, y+w+h+P]
     ];
-    createPolygon(svg, innerWallPoints, "回折牆", x-w, y);
+    drawWallWithFingers({}, svg, `前端牆 ${x-w}×${h}`, wall3Points, [], 'A', [-P+5, y+w+P+15]);
 
-    // 零件 5: 終端短牆 (End Wall) - (y) * h
-    const endWallPoints = [
-        [0, 0], [y, 0], [y, h], [0, h]
+    // === 牆4：左側牆 (Y+W方向, 高度H, 沿著底板左側邊緣) ===
+    const wall4Points = [
+        [-h-P, -P], [-h-P, y+w+P], [-P, y+w+P], [-P, -P]
     ];
-    createPolygon(svg, endWallPoints, "端牆", 0, y+w+h);
+    drawWallWithFingers({}, svg, `左側牆 ${y+w}×${h}`, wall4Points, [], 'A', [-h-P+5, -P+15]);
+
+    // === 牆5：內側回折牆 (W方向, 高度H, L型內側) ===
+    const wall5Points = [
+        [x-w-P, y-P], [x+P, y-P], [x+P, y+h+P], [x-w-P, y+h+P]
+    ];
+    drawWallWithFingers({}, svg, `內側牆 ${w}×${h}`, wall5Points, [], 'A', [x-w-P+5, y-P+15]);
+
+    // === 牆6：端部牆 (Y方向, 高度H, L型末端) ===
+    const wall6Points = [
+        [x-w-P, y+w+P], [x-w-P, y-w-P+h], [x-w-P+h, y-w-P+h], [x-w-P+h, y+w+P]
+    ];
+    drawWallWithFingers({}, svg, `端部牆 ${y-w}×${h}`, wall6Points, [], 'A', [x-w-P+5, y+w+P+15]);
+
+    // === 底板 ===
+    const basePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    basePath.setAttribute('d', polyline({}, basePoints));
+    basePath.setAttribute('class', 'cut-line');
+    basePath.setAttribute('stroke-width', '2');
+    svg.appendChild(basePath);
+
+    const baseLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    baseLabel.setAttribute('x', x/2);
+    baseLabel.setAttribute('y', y+w/2);
+    baseLabel.setAttribute('class', 'label-main');
+    baseLabel.setAttribute('text-anchor', 'middle');
+    baseLabel.setAttribute('dominant-baseline', 'middle');
+    baseLabel.textContent = `底板 ${x}×${y+w}`;
+    svg.appendChild(baseLabel);
+
+    // 繪製尺寸線
+    if (showDim) {
+        // X 尺寸線
+        drawDimLine(svg, 0, -h-P-15, x, -h-P-15, `${x}mm`, x/2, -h-P-25);
+        // Y 尺寸線
+        drawDimLine(svg, x+P+h+15, -P, x+P+h+15, y+P, `${y}mm`, x+P+h+25, y/2);
+        // W 尺寸線
+        drawDimLine(svg, x-w-P-20, -P, x+P+h+20, -P, `${w}mm`, x-w/2-P, -P-15);
+        // H 尺寸線
+        drawDimLine(svg, -h-P-15, -P, -h-P-15, -h-P, `${h}mm`, -h-P-25, -h/2-P);
+    }
 
     // 調整 ViewBox
-    const padding = 50;
-    const minX = -padding;
-    const minY = -h - padding;
-    const maxX = x + padding;
-    const maxY = y + w + h*2 + padding;
-    svg.setAttribute('viewBox', `${minX} ${minY} ${maxX - minX} ${maxY - minY}`);
+    const pad = 40;
+    svg.setAttribute('viewBox', `${-h-P-pad} ${-(h+P+30+pad)} ${x+P+h+60+pad*2} ${y+w+h+P+60+pad}`);
 }
 
-function createPolygon(svg, points, label, dx, dy) {
-    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    let d = `M ${points[0][0] + dx} ${points[0][1] + dy}`;
-    for(let i=1; i<points.length; i++) {
-        d += ` L ${points[i][0] + dx} ${points[i][1] + dy}`;
-    }
-    d += " Z";
-    
-    path.setAttribute("d", d);
-    path.setAttribute("class", "cut-line");
-    svg.appendChild(path);
+function drawDimLine(svg, x1, y1, x2, y2, label, lx, ly) {
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', x1); line.setAttribute('y1', y1);
+    line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+    line.setAttribute('class', 'dimension-line');
+    svg.appendChild(line);
 
-    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    text.setAttribute("x", points[0][0] + dx + 5);
-    text.setAttribute("y", points[0][1] + dy + 15);
-    text.setAttribute("class", "label-text");
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', lx); text.setAttribute('y', ly);
+    text.setAttribute('class', 'label-text');
+    text.setAttribute('text-anchor', 'middle');
     text.textContent = label;
     svg.appendChild(text);
 }
 
 function downloadSVG() {
-    const svgData = document.getElementById('svg-canvas').outerHTML;
-    const svgBlob = new Blob([svgData], {type:"image/svg+xml;charset=utf-8"});
-    const svgUrl = URL.createObjectURL(svgBlob);
-    const downloadLink = document.createElement("a");
-    downloadLink.href = svgUrl;
-    downloadLink.download = "lbox_layout.svg";
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
+    const svgData = document.getElementById('canvas').outerHTML;
+    const blob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'lbox_unfolded.svg';
+    a.click();
+    URL.revokeObjectURL(url);
 }
 
+// === 事件監聽 ===
+['x', 'y', 'w', 'h', 't', 'fw', 'fd'].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('input', () => {
+        document.getElementById(id + '-val').textContent = el.value;
+        draw();
+    });
+});
+document.getElementById('show-dimension').addEventListener('change', draw);
+
+// 初始繪製
 draw();
 </script>
 </body>
