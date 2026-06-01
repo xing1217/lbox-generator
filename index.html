@@ -1,0 +1,162 @@
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L-Box Generator - 薯條AI專業版</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; margin: 0; height: 100vh; background: #eef2f7; color: #333; }
+        #controls { width: 380px; background: #fff; padding: 25px; box-shadow: 4px 0 15px rgba(0,0,0,0.1); overflow-y: auto; z-index: 10; display: flex; flex-direction: column; }
+        #viewer { flex-grow: 1; display: flex; align-items: center; justify-content: center; padding: 40px; position: relative; overflow: auto; background-image: radial-gradient(#d1d1d1 1px, transparent 1px); background-size: 20px 20px; }
+        .control-group { margin-bottom: 18px; }
+        label { display: block; font-size: 13px; font-weight: 600; color: #555; margin-bottom: 6px; }
+        input { width: 100%; padding: 10px; box-sizing: border-box; border: 2px solid #ddd; border-radius: 6px; transition: border-color 0.2s; font-size: 14px; }
+        input:focus { border-color: #4a90e2; outline: none; }
+        h2 { margin-top: 0; color: #2c3e50; font-size: 22px; display: flex; align-items: center; gap: 10px; }
+        .hint { font-size: 12px; color: #888; margin-bottom: 20px; line-height: 1.4; }
+        svg { background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-radius: 4px; transition: all 0.3s ease; }
+        .cut-line { fill: none; stroke: #000; stroke-width: 1.5; stroke-linejoin: round; }
+        .finger-fill { fill: #f9f9f9; stroke: #ccc; stroke-width: 0.5; }
+        .label-text { font-size: 12px; fill: #aaa; font-family: monospace; }
+        .btn-download { background: #4a90e2; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: 600; margin-top: 20px; transition: background 0.2s; }
+        .btn-download:hover { background: #357abd; }
+    </style>
+</head>
+<body>
+
+<div id="controls">
+    <h2>📦 L型盒子生成器</h2>
+    <p class="hint">薯條AI 專屬設計：無蓋 L 型展開圖。<br>數據變動時，右側圖形會即時更新。</p>
+    <hr style="border: 0; border-top: 1px solid #eee; margin-bottom: 20px;">
+    
+    <div class="control-group">
+        <label>總長 X (mm)</label>
+        <input type="number" id="x" value="200" oninput="draw()">
+    </div>
+    <div class="control-group">
+        <label>主寬 Y (mm)</label>
+        <input type="number" id="y" value="100" oninput="draw()">
+    </div>
+    <div class="control-group">
+        <label>L型回折寬 W (mm)</label>
+        <input type="number" id="w" value="100" oninput="draw()">
+    </div>
+    <div class="control-group">
+        <label>盒子高度 H (mm)</label>
+        <input type="number" id="h" value="50" oninput="draw()">
+    </div>
+    <div class="control-group">
+        <label>板材厚度 T (mm)</label>
+        <input type="number" id="t" value="3" oninput="draw()">
+    </div>
+    <div class="control-group">
+        <label>手指寬度 F (mm)</label>
+        <input type="number" id="f" value="3" oninput="draw()">
+    </div>
+    
+    <button class="btn-download" onclick="downloadSVG()">下載 SVG 檔案</button>
+    
+    <div style="margin-top: 30px; font-size: 12px; color: #777; border-top: 1px solid #eee; padding-top: 20px;">
+        <strong>💡 使用提示：</strong><br>
+        1. 調整數值後可直接下載 SVG 到激光切割機。<br>
+        2. 板材厚度 T 必須與手指寬度 F 保持一致才能完美接合。<br>
+        3. 黑色線條 = 切割線。
+    </div>
+</div>
+
+<div id="viewer">
+    <svg id="svg-canvas" width="1000" height="1000"></svg>
+</div>
+
+<script>
+function draw() {
+    const x = parseFloat(document.getElementById('x').value) || 0;
+    const y = parseFloat(document.getElementById('y').value) || 0;
+    const w = parseFloat(document.getElementById('w').value) || 0;
+    const h = parseFloat(document.getElementById('h').value) || 0;
+    const t = parseFloat(document.getElementById('t').value) || 0;
+    const f = parseFloat(document.getElementById('f').value) || 0;
+
+    const svg = document.getElementById('svg-canvas');
+    svg.innerHTML = '';
+
+    // 座標系: (0,0) 是左上
+    // 零件 1: 底板 (L-Shape)
+    // 頂點: (0,0) -> (x,0) -> (x,y) -> (x-w,y) -> (x-w,y+w) -> (0,y+w) -> Close
+    const basePoints = [
+        [0, 0], [x, 0], [x, y], [x-w, y], [x-w, y+w], [0, y+w]
+    ];
+    createPolygon(svg, basePoints, "底板", 0, 0);
+
+    // 零件 2: 後長牆 (Back Wall) - x * h
+    // 位置在底板上方
+    const backWallPoints = [
+        [0, 0], [x, 0], [x, h], [0, h]
+    ];
+    createPolygon(svg, backWallPoints, "後長牆", 0, -h);
+
+    // 零件 3: 左側牆 (Left Wall) - (y+w) * h
+    // 位置在底板左側（這裡為了展開圖方便，放在底板下方）
+    const leftWallPoints = [
+        [0, 0], [y+w, 0], [y+w, h], [0, h]
+    ];
+    createPolygon(svg, leftWallPoints, "左側牆", 0, y+w);
+
+    // 零件 4: L型回折牆 (Inner Wall) - w * h
+    const innerWallPoints = [
+        [0, 0], [w, 0], [w, h], [0, h]
+    ];
+    createPolygon(svg, innerWallPoints, "回折牆", x-w, y);
+
+    // 零件 5: 終端短牆 (End Wall) - (y) * h
+    const endWallPoints = [
+        [0, 0], [y, 0], [y, h], [0, h]
+    ];
+    createPolygon(svg, endWallPoints, "端牆", 0, y+w+h);
+
+    // 調整 ViewBox
+    const padding = 50;
+    const minX = -padding;
+    const minY = -h - padding;
+    const maxX = x + padding;
+    const maxY = y + w + h*2 + padding;
+    svg.setAttribute('viewBox', `${minX} ${minY} ${maxX - minX} ${maxY - minY}`);
+}
+
+function createPolygon(svg, points, label, dx, dy) {
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    let d = `M ${points[0][0] + dx} ${points[0][1] + dy}`;
+    for(let i=1; i<points.length; i++) {
+        d += ` L ${points[i][0] + dx} ${points[i][1] + dy}`;
+    }
+    d += " Z";
+    
+    path.setAttribute("d", d);
+    path.setAttribute("class", "cut-line");
+    svg.appendChild(path);
+
+    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    text.setAttribute("x", points[0][0] + dx + 5);
+    text.setAttribute("y", points[0][1] + dy + 15);
+    text.setAttribute("class", "label-text");
+    text.textContent = label;
+    svg.appendChild(text);
+}
+
+function downloadSVG() {
+    const svgData = document.getElementById('svg-canvas').outerHTML;
+    const svgBlob = new Blob([svgData], {type:"image/svg+xml;charset=utf-8"});
+    const svgUrl = URL.createObjectURL(svgBlob);
+    const downloadLink = document.createElement("a");
+    downloadLink.href = svgUrl;
+    downloadLink.download = "lbox_layout.svg";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+}
+
+draw();
+</script>
+</body>
+</html>
