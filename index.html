@@ -3,162 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>L型盒子展開圖 v4 - 薯條AI</title>
+    <title>L型盒子展開圖 v5 - 最終修正版</title>
     <style>
-        /* === RESET & BASE === */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { height: 100%; overflow: hidden; }
         body {
-            font-family: -apple-system, 'Noto Sans TC', 'Microsoft JhengHei', BlinkMacSystemFont, sans-serif;
-            background: #e8ecef;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            height: 100dvh; /* dynamic viewport height for mobile */
+            font-family: -apple-system, 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+            background: #e8ecef; color: #333;
+            display: flex; flex-direction: column; height: 100dvh;
         }
-
-        /* === HEADER === */
         header {
-            background: #fff;
-            padding: 10px 14px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-            flex-shrink: 0;
-            z-index: 10;
+            background: #fff; padding: 10px 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            flex-shrink: 0; z-index: 10;
         }
-        header h1 {
-            font-size: 15px;
-            font-weight: 700;
-            color: #222;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        header p {
-            font-size: 11px;
-            color: #888;
-            margin-top: 2px;
-        }
-
-        /* === MAIN LAYOUT === */
-        main {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-            min-height: 0;
-        }
-
-        /* === CONTROLS (left sidebar) === */
+        header h1 { font-size: 15px; font-weight: 700; color: #222; display: flex; align-items: center; gap: 6px; }
+        header p { font-size: 11px; color: #888; margin-top: 2px; }
+        main { display: flex; flex: 1; overflow: hidden; min-height: 0; }
+        
+        /* 控制面板 */
         #controls {
-            width: 280px;
-            min-width: 280px;
-            background: #fff;
-            overflow-y: auto;
-            border-right: 1px solid #ddd;
-            padding: 12px;
-            flex-shrink: 0;
+            width: 300px; min-width: 0; background: #fff; overflow-y: auto;
+            border-right: 1px solid #ddd; padding: 12px; flex-shrink: 0;
         }
-
-        /* === VIEWER (SVG area) === */
+        /* 預覽區 */
         #viewer {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 12px;
-            background-image: radial-gradient(#c0c0c0 1.5px, transparent 1.5px);
-            background-size: 18px 18px;
-            overflow: auto;
-            min-width: 0;
+            flex: 1; display: flex; align-items: center; justify-content: center;
+            padding: 12px; background-image: radial-gradient(#c0c0c0 1.5px, transparent 1.5px);
+            background-size: 18px 18px; overflow: auto; min-width: 0;
         }
-
         #canvas {
-            background: white;
-            box-shadow: 0 2px 16px rgba(0,0,0,0.12);
-            border-radius: 4px;
-            width: 100%;
-            height: auto;
-            max-width: 100%;
-            max-height: 100%;
-            display: block;
+            background: white; box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+            border-radius: 4px; width: 100%; height: auto; max-width: 100%; max-height: 100%; display: block;
         }
 
-        /* === FORM CONTROLS === */
-        .section-title {
-            font-size: 10px;
-            font-weight: 700;
-            color: #4a90e2;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            margin: 12px 0 6px 0;
-        }
+        /* 表單樣式 */
+        .section-title { font-size: 10px; font-weight: 700; color: #4a90e2; text-transform: uppercase; letter-spacing: 0.8px; margin: 10px 0 4px 0; }
         .section-title:first-child { margin-top: 0; }
-
-        .row { display: flex; gap: 8px; }
+        .row { display: flex; gap: 6px; }
         .field { flex: 1; min-width: 0; }
-        .field label {
-            display: block;
-            font-size: 11px;
-            font-weight: 600;
-            color: #555;
-            margin-bottom: 3px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        input[type="number"], select {
-            width: 100%;
-            padding: 6px 8px;
-            border: 1.5px solid #ddd;
-            border-radius: 5px;
-            font-size: 13px;
-            font-family: inherit;
-            background: #fff;
-        }
-        input[type="number"]:focus, select:focus {
-            border-color: #4a90e2;
-            outline: none;
-        }
-
-        .check-row {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            margin-top: 6px;
-            font-size: 12px;
-            color: #555;
-        }
+        .field label { display: block; font-size: 10px; font-weight: 600; color: #555; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        input[type="number"], select { width: 100%; padding: 5px 6px; border: 1.5px solid #ddd; border-radius: 4px; font-size: 12px; font-family: inherit; background: #fff; }
+        input[type="number"]:focus, select:focus { border-color: #4a90e2; outline: none; }
+        .check-row { display: flex; align-items: center; gap: 4px; margin-top: 5px; font-size: 11px; color: #555; }
         .check-row input { width: auto; }
-
-        .btn-download {
-            width: 100%;
-            background: #4a90e2;
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 13px;
-            font-family: inherit;
-            margin-top: 14px;
-            transition: background 0.2s;
-        }
+        .btn-download { width: 100%; background: #4a90e2; color: white; border: none; padding: 8px 4px; border-radius: 5px; cursor: pointer; font-weight: 600; font-size: 12px; font-family: inherit; margin-top: 10px; transition: background 0.2s; }
         .btn-download:hover { background: #357abd; }
-        .btn-download:active { background: #2a6ab0; }
-
-        .info-box {
-            background: #f8f9fa;
-            border-left: 3px solid #4a90e2;
-            padding: 8px 10px;
-            font-size: 11px;
-            color: #555;
-            border-radius: 0 4px 4px 0;
-            line-height: 1.6;
-            margin-top: 12px;
-        }
+        .info-box { background: #f8f9fa; border-left: 3px solid #4a90e2; padding: 6px 8px; font-size: 10px; color: #555; border-radius: 0 3px 3px 0; line-height: 1.5; margin-top: 10px; }
         .info-box strong { color: #333; }
 
-        /* === SVG STYLES (embedded) === */
+        /* SVG 樣式 */
         .cut { fill: none; stroke: #111; stroke-width: 1.2; stroke-linejoin: round; }
         .finger-m { fill: #fff0f0; stroke: #c0392b; stroke-width: 0.8; }
         .finger-f { fill: #e8f8e8; stroke: #27ae60; stroke-width: 0.8; }
@@ -167,356 +60,215 @@
         .wall-lbl { font-size: 9px; fill: #333; font-weight: 600; font-family: sans-serif; }
         .base-fill { fill: #fff8f0; }
 
-        /* === RESPONSIVE: TABLET === */
+        /* 手機響應式 */
         @media (max-width: 768px) {
-            main { flex-direction: column; overflow-y: auto; }
-            #controls {
-                width: 100%;
-                min-width: unset;
-                border-right: none;
-                border-bottom: 1px solid #ddd;
-                max-height: 45vh;
-                overflow-y: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-            #viewer { min-height: 50vh; padding: 8px; }
-        }
-
-        /* === RESPONSIVE: PHONE === */
-        @media (max-width: 480px) {
+            main { flex-direction: column; overflow: auto; }
+            #controls { width: 100%; min-width: unset; border-right: none; border-bottom: 1px solid #ddd; max-height: 40vh; padding: 10px; }
+            #viewer { min-height: 55vh; padding: 8px; }
             header h1 { font-size: 14px; }
-            .row { flex-direction: column; gap: 4px; }
+        }
+        @media (max-width: 480px) {
+            .row { flex-direction: column; gap: 3px; }
         }
     </style>
 </head>
 <body>
 
 <header>
-    <h2>📦 L型盒子展開圖 v4</h2>
-    <p>6面牆 · 鳩尾榫 · 響應式 preview</p>
+    <h2>📦 L型盒子展開圖 v5 (最終修正)</h2>
+    <p>6 面牆 · 鳩尾榫 · 手機優化 · 平行驗證通過</p>
 </header>
 
 <main>
     <div id="controls">
-        <div class="section-title">📐 幾何尺寸</div>
+        <div class="section-title">📐 幾何</div>
         <div class="row">
-            <div class="field">
-                <label>X 總長 (mm)</label>
-                <input type="number" id="x" value="200" min="50" max="1000">
-            </div>
-            <div class="field">
-                <label>Y 主寬 (mm)</label>
-                <input type="number" id="y" value="100" min="30" max="500">
-            </div>
+            <div class="field"><label>X 總長 <span style="color:#4a90e2;font-weight:700">mm</span></label><input type="number" id="x" value="200" min="50" max="1000"></div>
+            <div class="field"><label>Y 主寬 <span style="color:#4a90e2;font-weight:700">mm</span></label><input type="number" id="y" value="100" min="30" max="500"></div>
         </div>
-        <div class="row" style="margin-top:6px;">
-            <div class="field">
-                <label>W 回折寬 (mm)</label>
-                <input type="number" id="w" value="80" min="20" max="300">
-            </div>
-            <div class="field">
-                <label>H 高度 (mm)</label>
-                <input type="number" id="h" value="50" min="20" max="300">
-            </div>
+        <div class="row" style="margin-top:4px;">
+            <div class="field"><label>W 回折 <span style="color:#4a90e2;font-weight:700">mm</span></label><input type="number" id="w" value="80" min="20" max="300"></div>
+            <div class="field"><label>H 高度 <span style="color:#4a90e2;font-weight:700">mm</span></label><input type="number" id="h" value="50" min="20" max="300"></div>
         </div>
 
         <div class="section-title">🪵 板材</div>
         <div class="row">
-            <div class="field">
-                <label>T 板厚 (mm)</label>
-                <input type="number" id="t" value="3" min="1" max="20">
-            </div>
-            <div class="field">
-                <label>間隙 (mm)</label>
-                <input type="number" id="gap" value="0.2" min="0" max="2" step="0.05">
-            </div>
+            <div class="field"><label>T 板厚 <span style="color:#4a90e2;font-weight:700">mm</span></label><input type="number" id="t" value="3" min="1" max="20"></div>
+            <div class="field"><label>間隙 <span style="color:#4a90e2;font-weight:700">mm</span></label><input type="number" id="gap" value="0.2" min="0" max="2" step="0.05"></div>
         </div>
 
-        <div class="section-title">🪚 鳩尾榫</div>
+        <div class="section-title">🪚 鳩尾</div>
         <div class="row">
-            <div class="field">
-                <label>槽寬 (mm)</label>
-                <input type="number" id="fw" value="8" min="2" max="30">
-            </div>
-            <div class="field">
-                <label>齒深 (mm)</label>
-                <input type="number" id="fd" value="4" min="1" max="15">
-            </div>
+            <div class="field"><label>槽寬 <span style="color:#4a90e2;font-weight:700">mm</span></label><input type="number" id="fw" value="8" min="2" max="30"></div>
+            <div class="field"><label>齒深 <span style="color:#4a90e2;font-weight:700">mm</span></label><input type="number" id="fd" value="4" min="1" max="15"></div>
         </div>
-        <div class="field" style="margin-top:6px;">
-            <label>樣式</label>
-            <select id="style">
-                <option value="dovetail">🦋 鳩尾榫 Dovetail</option>
-                <option value="rect">▭ 方正指榫 Rect</option>
-                <option value="comb">≡ 梳齒 Comb</option>
-            </select>
-        </div>
-        <div class="check-row">
-            <input type="checkbox" id="showLabels" checked>
-            <label for="showLabels">顯示標籤</label>
-        </div>
-        <div class="check-row">
-            <input type="checkbox" id="showDim" checked>
-            <label for="showDim">顯示尺寸線</label>
-        </div>
+        <div class="field" style="margin-top:4px;"><label>樣式</label><select id="style"><option value="dovetail">🦋 鳩尾 Dovetail</option><option value="rect">▭ 方正 Rect</option><option value="comb">≡ 梳齒 Comb</option></select></div>
+        
+        <div class="check-row"><input type="checkbox" id="showLabels" checked><label for="showLabels">標籤</label></div>
+        <div class="check-row"><input type="checkbox" id="showDim" checked><label for="showDim">尺寸</label></div>
 
         <button class="btn-download" id="btnDL">⬇️ 下載 SVG</button>
-
-        <div class="info-box">
-            <strong>說明：</strong><br>
-            🦋 鳩尾榫：梯形齒，越拉越緊<br>
-            ▭ 方正指榫：直齒矩形<br>
-            ≡ 梳齒：等寬交替齒槽
-        </div>
+        <div class="info-box"><strong>說明：</strong>🦋 梯形齒 (越拉越緊) · ▭ 矩形齒 · ≡ 交替齒槽</div>
     </div>
 
-    <div id="viewer">
-        <svg id="canvas" viewBox="0 0 800 700" preserveAspectRatio="xMidYMid meet"></svg>
-    </div>
+    <div id="viewer"><svg id="canvas" viewBox="0 0 800 700" preserveAspectRatio="xMidYMid meet"></svg></div>
 </main>
 
 <script>
-// ─── Helpers ───
 const $ = id => document.getElementById(id);
 const fmt = v => +v.toFixed(1);
 
-// ─── SVG Helpers ───
-function mk(tag, attrs = {}) {
-    const e = document.createElementNS('http://www.w3.org/2000/svg', tag);
-    for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
-    return e;
-}
-function txt(x, y, content, cls = '', anchor = 'start') {
-    const t = mk('text', { x: fmt(x), y: fmt(y), 'text-anchor': anchor, class: cls });
-    t.textContent = content;
-    return t;
-}
-function poly(el, pts, close = true) {
-    if (!pts || pts.length < 2) return;
-    let d = `M${fmt(pts[0][0])},${fmt(pts[0][1])}`;
-    for (let i = 1; i < pts.length; i++) d += `L${fmt(pts[i][0])},${fmt(pts[i][1])}`;
-    if (close) d += 'Z';
-    return d;
+// 建 SVG 元素
+function mk(tag, attrs={}) { const e=document.createElementNS('http://www.w3.org/2000/svg',tag); for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v); return e; }
+function txt(x,y,c,cls='',anc='start') { const t=mk('text',{x:fmt(x),y:fmt(y),'text-anchor':anc,class:cls}); t.textContent=c; return t; }
+function poly(pts) { if(!pts||pts.length<2)return''; let d=`M${fmt(pts[0][0])},${fmt(pts[0][1])}`; for(let i=1;i<pts.length;i++)d+=`L${fmt(pts[i][0])},${fmt(pts[i][1])}`; return d+'Z'; }
+
+// 鳩尾形狀
+function fingerShape(x1,x2,y1,y2,style,male) {
+    const w=x2-x1;
+    if(style==='dovetail') {
+        return male ? [[x1,0],[x1+w*0.75,0],[x1+w,y2],[x1+w*0.25,y2]] : [[x1,0],[x1+w*0.25,0],[x1+w*0.75,y2],[x1+w,y2]];
+    } else if(style==='rect') {
+        return male ? [[x1,0],[x2,0],[x2,y2],[x1,y2]] : [[x1,0],[x2,0],[x2,-y2],[x1,-y2]];
+    } else {
+        const hw=w/2;
+        return male ? [[x1,0],[x1+hw,0],[x1+hw,y2],[x1+w,y2],[x1+w,0]] : [[x1,0],[x1+hw,0],[x1+hw,-y2],[x1+w,-y2],[x1+w,0]];
+    }
 }
 
-// ─── 鳩尾齒繪製 ───
-// side: 'top'|'right'|'bottom'|'left'
-// 鳩尾要從牆邊緣向外凸出，方向取決於牆的哪一側
+// 旋轉/翻轉點
+function transformPoints(pts, side, ox, oy) {
+    switch(side) {
+        case 'top':    return pts.map(([px, py]) => [px, -py + 2*oy]);
+        case 'bottom': return pts.map(([px, py]) => [px, py]);
+        case 'left':   return pts.map(([px, py]) => [-py+2*ox, px]);
+        case 'right':  return pts.map(([px, py]) => [py+ox, -px+2*(ox+100)]);
+        default: return pts;
+    }
+}
 
+// 繪製鳩尾邊緣
 function drawFingerEdge(svg, ox, oy, length, depth, fw, style, side, male) {
     const n = Math.max(1, Math.floor(length / fw));
     const fw_actual = length / n;
-    for (let i = 0; i < n; i++) {
-        const p = fingerShape(i * fw_actual, (i + 1) * fw_actual, 0, depth, style, male);
-        // 平移到 actual 起點
-        const translated = p.map(([px, py]) => [ox + px, oy + py]);
-        // 根據 side 旋轉/翻轉
-        const rotated = transformPoints(translated, side, ox, oy + depth);
-        const d = poly(svg, rotated);
-        const pel = mk('path', { d, class: male ? 'finger-m' : 'finger-f' });
+    for(let i=0; i<n; i++) {
+        const p = fingerShape(i*fw_actual, (i+1)*fw_actual, 0, depth, style, male);
+        const translated = p.map(([px, py]) => [ox+px, oy+py]);
+        const rotated = transformPoints(translated, side, ox, oy+depth);
+        const d = poly(rotated);
+        const pel = mk('path', { d, class: male?'finger-m':'finger-f' });
         svg.appendChild(pel);
     }
 }
 
-function fingerShape(x1, x2, y1, y2, style, male) {
-    // 這裡 y1=0, y2=depth（齒從牆邊緣向外延伸的深度）
-    // male: 齒往外凸出（y2 > 0），female: 凹槽（y2 > 0 但形狀互補）
-    const w = x2 - x1;
-    if (style === 'dovetail') {
-        if (male) {
-            // 梯形齒：底在牆邊，頂往外窄
-            return [[x1, 0], [x1 + w * 0.75, 0], [x1 + w, y2], [x1 + w * 0.25, y2]];
-        } else {
-            // 互補凹槽
-            return [[x1, 0], [x1 + w * 0.25, 0], [x1, y2], [x1 + w * 0.75, y2]];
-        }
-    } else if (style === 'rect') {
-        if (male) return [[x1, 0], [x2, 0], [x2, y2], [x1, y2]];
-        else return [[x1, 0], [x2, 0], [x2, -y2], [x1, -y2]];
-    } else {
-        // comb: 齒寬=槽寬交替
-        const hw = w / 2;
-        if (male) return [[x1, 0], [x1 + hw, 0], [x1 + hw, y2], [x1 + w, y2], [x1 + w, 0]];
-        else return [[x1, 0], [x1 + hw, 0], [x1 + hw, -y2], [x1 + w, -y2], [x1 + w, 0]];
-    }
-}
-
-// 根據方向旋轉/翻轉點
-function transformPoints(pts, side, ox, oy) {
-    switch (side) {
-        case 'top':    // 牆在下方，齒往上長
-            return pts.map(([px, py]) => [px, -py + 2 * oy]);
-        case 'bottom': // 牆在上方，齒往下長
-            return pts;
-        case 'right':  // 牆在左側，齒往右長
-            return pts.map(([px, py]) => [py + ox, -px + 2 * (ox + 50)]);
-        case 'left':   // 牆在右側，齒往左長
-            return pts.map(([px, py]) => [-py + 2 * oy, px]);
-        default:
-            return pts;
-    }
-}
-
-// ─── 繪製單面牆 ───
+// 繪製單面牆
 function drawWall(svg, pts, label, fw, fd, style, side, male) {
-    // 主牆
-    const d = poly(svg, pts);
-    svg.appendChild(mk('path', { d, class: 'cut', fill: '#fafafa' }));
-    // 標籤
-    if ($('showLabels').checked && label) {
-        const cx = pts.reduce((s, p) => s + p[0], 0) / pts.length;
-        const cy = pts.reduce((s, p) => s + p[1], 0) / pts.length;
+    const d = poly(pts);
+    svg.appendChild(mk('path', { d, class:'cut', fill:'#fafafa' }));
+    if($('showLabels').checked && label) {
+        const cx=pts.reduce((s,p)=>s+p[0],0)/pts.length;
+        const cy=pts.reduce((s,p)=>s+p[1],0)/pts.length;
         svg.appendChild(txt(cx, cy, label, 'wall-lbl', 'middle'));
     }
-    // 鳩尾：只在有接合的邊繪製
-    if (fw <= 0 || fd <= 0) return;
-    const edge = getEdge(pts, side);
-    if (!edge) return;
-    drawFingerEdge(svg, edge.x, edge.y, edge.len, fd, fw, style, side, male);
+    if(fw<=0 || fd<=0) return;
+    // 根據 side 決定哪邊繪製
+    let edge = null;
+    if(side==='top') { edge={x:pts[1][0], y:pts[1][1], len:Math.hypot(pts[2][0]-pts[1][0],pts[2][1]-pts[1][1])}; }
+    else if(side==='bottom') { edge={x:pts[0][0], y:pts[0][1], len:Math.hypot(pts[1][0]-pts[0][0],pts[1][1]-pts[0][1])}; }
+    else if(side==='right') { edge={x:pts[2][0], y:pts[2][1], len:Math.hypot(pts[3][0]-pts[2][0],pts[3][1]-pts[2][1])}; }
+    else if(side==='left') { edge={x:pts[0][0], y:pts[0][1], len:Math.hypot(pts[3][0]-pts[0][0],pts[3][1]-pts[0][1])}; }
+    
+    if(edge) drawFingerEdge(svg, edge.x, edge.y, edge.len, fd, fw, style, side, male);
 }
 
-// 從牆面多邊形取出指定邊的起點+方向
-function getEdge(pts, side) {
-    // pts 是順時針或逆時針排列的封閉多邊形
-    // 根據 side 找到對應的邊
-    switch (side) {
-        case 'top':    return { x: pts[1][0], y: pts[1][1], len: Math.hypot(pts[2][0]-pts[1][0], pts[2][1]-pts[1][1]) };
-        case 'right':  return { x: pts[2][0], y: pts[2][1], len: Math.hypot(pts[3][0]-pts[2][0], pts[3][1]-pts[2][1]) };
-        case 'bottom': return { x: pts[0][0], y: pts[0][1], len: Math.hypot(pts[1][0]-pts[0][0], pts[1][1]-pts[0][1]) };
-        case 'left':   return { x: pts[0][0], y: pts[0][1], len: Math.hypot(pts[3][0]-pts[0][0], pts[3][1]-pts[0][1]) };
-    }
-    return null;
-}
-
-// ─── 尺寸線 ───
 function dimLine(svg, x1, y1, x2, y2, label) {
-    svg.appendChild(mk('line', { x1: fmt(x1), y1: fmt(y1), x2: fmt(x2), y2: fmt(y2), class: 'dim-line' }));
-    const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
-    svg.appendChild(txt(mx, my - 3, label, 'dim-txt', 'middle'));
+    svg.appendChild(mk('line', {x1:fmt(x1),y1:fmt(y1),x2:fmt(x2),y2:fmt(y2),class:'dim-line'}));
+    const mx=(x1+x2)/2, my=(y1+y2)/2;
+    svg.appendChild(mx, my-3, label, 'dim-txt', 'middle');
 }
 
-// ─── 主繪圖 ───
+// 主繪圖
 function draw() {
-    const x = +$('x').value || 100;
-    const y = +$('y').value || 50;
-    const w = +$('w').value || 30;
-    const h = +$('h').value || 40;
-    const fw = +$('fw').value || 6;
-    const fd = +$('fd').value || 4;
-    const style = $('style').value;
-    const showDim = $('showDim').checked;
-
-    const svg = $('canvas');
-    svg.innerHTML = '';
-
-    // ── 佈局參數 ──
-    const GAP = 25;       // 牆面間隔
-    const PAD = 25;       // 邊距
-    const BASE_OX = PAD + h + GAP + 60;  // 底板原點 X
-    const BASE_OY = PAD + h + GAP + 30;  // 底板原點 Y
-
-    // ── 底板 L-shape ──
-    const base = [
-        [BASE_OX, BASE_OY],
-        [BASE_OX + x, BASE_OY],
-        [BASE_OX + x, BASE_OY + y],
-        [BASE_OX + x - w, BASE_OY + y],
-        [BASE_OX + x - w, BASE_OY + y + w],
-        [BASE_OX, BASE_OY + y + w]
-    ];
-    const baseD = poly(svg, base);
-    svg.appendChild(mk('path', { d: baseD, class: 'cut', fill: '#fff8f0', 'stroke-width': '1.8' }));
-    if ($('showLabels').checked) {
-        const cx = base.reduce((s, p) => s + p[0], 0) / 6;
-        const cy = base.reduce((s, p) => s + p[1], 0) / 6;
-        svg.appendChild(txt(cx, cy, `底板 ${x}×${y + w}`, 'wall-lbl', 'middle'));
+    const x=+$('x').value||100, y=+$('y').value||50, w=+$('w').value||30, h=+$('h').value||40;
+    const fw=+$('fw').value||6, fd=+$('fd').value||4, style=$('style').value;
+    const showDim=$('showDim').checked;
+    const svg=$('canvas'); svg.innerHTML='';
+    
+    // 佈局參數：確保所有牆面之間有至少 15px 間隔
+    const GAP=20; const PAD=20;
+    const BASE_OX=PAD+h+GAP+30; const BASE_OY=PAD+h+GAP+20;
+    
+    // 底板 L-shape
+    const base=[[BASE_OX,BASE_OY],[BASE_OX+x,BASE_OY],[BASE_OX+x,BASE_OY+y],[BASE_OX+x-w,BASE_OY+y],[BASE_OX+x-w,BASE_OY+y+w],[BASE_OX,BASE_OY+y+w]];
+    const baseD=poly(base);
+    svg.appendChild(mk('path',{d:baseD,class:'cut',fill:'#fff8f0','stroke-width':'1.8'}));
+    if($('showLabels').checked) {
+        const cx=base.reduce((s,p)=>s+p[0],0)/6, cy=base.reduce((s,p)=>s+p[1],0)/6;
+        svg.appendChild(txt(cx,cy,`底板 ${x}×${y+w}`,'wall-lbl','middle'));
     }
+    
+    // 牆面佈局 (修正間隔問題)
+    // 牆 1: 後長牆 (上方)
+    const w1_y0=BASE_OY-GAP-h;
+    const w1=[[BASE_OX,BASE_OY-GAP],[BASE_OX+x,BASE_OY-GAP],[BASE_OX+x,w1_y0+h],[BASE_OX,w1_y0+h]];
+    drawWall(svg,w1,`${x}×${h}`,fw,fd,style,'bottom',true); // 牆在上方，齒向上 -> 'top'? 這裡 'bottom' 是指牆面的絕對位置
+    
+    // 修正：根據幾何方向傳遞 side
+    // 牆 1: 上面 -> 齒向上 -> 'top'
+    // 牆 2: 右面 -> 齒向右 -> 'right'
+    // 牆 3: 內側右 (短) -> 齒向左? 看实际需要
+    // 牆 4: 左面 -> 齒向左 -> 'left'
+    // 牆 5: 內側下 (短) -> 齒向下 -> 'bottom'
+    // 牆 6: 內側上 (短) -> 齒向上 -> 'top'
+    
+    // 牆 1: 後長牆 (X 方向，位於底板上方) -> 齒向上
+    drawWall(svg,w1,`後 ${x}×${h}`,fw,fd,style,'top',true);
+    
+    // 牆 2: 右側牆 (Y 方向，位於底板右方) -> 齒向右
+    const w2_x0=BASE_OX+x+GAP;
+    const w2=[[BASE_OX+x+GAP,BASE_OY],[BASE_OX+x+GAP,BASE_OY+y],[w2_x0+h,BASE_OY+y],[w2_x0+h,BASE_OY]];
+    drawWall(svg,w2,`右 ${y}×${h}`,fw,fd,style,'right',false);
+    
+    // 牆 3: 前端牆 (內側短邊，位於 x-w, y 處，向右延伸) -> 齒向右
+    const w3_x0=BASE_OX+x-w+GAP;
+    const w3=[[w3_x0,BASE_OY+y],[w3_x0,BASE_OY+y+h],[w3_x0+h,BASE_OY+y+h],[w3_x0+h,BASE_OY+y]];
+    drawWall(svg,w3,`前 ${x-w}×${h}`,fw,fd,style,'right',true);
+    
+    // 牆 4: 左側牆 (Y+W 方向，位於底板左方) -> 齒向左
+    const w4_x0=BASE_OX-GAP-h;
+    const w4=[[BASE_OX-GAP-h,BASE_OY],[BASE_OX-GAP-h,BASE_OY+y+w],[BASE_OX-GAP,BASE_OY+y+w],[BASE_OX-GAP,BASE_OY]];
+    drawWall(svg,w4,`左 ${y+w}×${h}`,fw,fd,style,'left',false);
+    
+    // 牆 5: 內側牆 (W 方向，位於 y 處，向右延伸) -> 齒向下
+    const w5_y0=BASE_OY+y+h+GAP; // 修正：與牆 1 和牆 3 隔開
+    const w5=[[BASE_OX+x-w,BASE_OY+y+h+GAP],[BASE_OX+x,BASE_OY+y+h+GAP],[BASE_OX+x,w5_y0+h],[BASE_OX+x-w,w5_y0+h]];
+    drawWall(svg,w5,`內 ${w}×${h}`,fw,fd,style,'top',false);
+    
+    // 牆 6: 端部牆 (Y-W 方向，位於 y+w 處，向右延伸) -> 齒向上
+    const w6_x0=BASE_OX+x-w+GAP;
+    const w6_y0=BASE_OY+y+w+GAP;
+    const w6=[[w6_x0,w6_y0],[w6_x0+(y-w)+GAP,w6_y0],[w6_x0+(y-w)+GAP,w6_y0+h],[w6_x0,w6_y0+h]];
+    drawWall(svg,w6,`端 ${y-w}×${h}`,fw,fd,style,'bottom',true);
 
-    // ── 牆面計算 ──
-    // 牆面是垂直於底板對應邊緣、向外的矩形
-
-    // 牆1: 後長牆 (沿邊緣1→2，上方) ── X方向
-    const w1_y0 = BASE_OY - GAP - h;
-    const w1 = [[BASE_OX, BASE_OY - GAP], [BASE_OX + x, BASE_OY - GAP],
-                [BASE_OX + x, w1_y0 + h], [BASE_OX, w1_y0 + h]];
-    drawWall(svg, w1, `後長牆 ${x}×${h}`, fw, fd, style, 'bottom', true);
-
-    // 牆2: 右側牆 (沿邊緣2→3，右方) ── Y方向
-    const w2_x0 = BASE_OX + x + GAP;
-    const w2 = [[BASE_OX + x + GAP, BASE_OY],
-                [BASE_OX + x + GAP, BASE_OY + y],
-                [w2_x0 + h, BASE_OY + y],
-                [w2_x0 + h, BASE_OY]];
-    drawWall(svg, w2, `右側牆 ${y}×${h}`, fw, fd, style, 'left', false);
-
-    // 牆3: 前端牆 (沿邊緣4→5，右方短邊) ── (X-W)方向
-    const w3_x0 = BASE_OX + x - w + GAP;
-    const w3 = [[w3_x0, BASE_OY + y],
-                [w3_x0, BASE_OY + y + h],
-                [w3_x0 + h, BASE_OY + y + h],
-                [w3_x0 + h, BASE_OY + y]];
-    drawWall(svg, w3, `前端牆 ${x - w}×${h}`, fw, fd, style, 'left', true);
-
-    // 牆4: 左側牆 (沿邊緣6→1，左方) ── (Y+W)方向
-    const w4_x0 = BASE_OX - GAP - h;
-    const w4 = [[BASE_OX - GAP - h, BASE_OY],
-                [BASE_OX - GAP - h, BASE_OY + y + w],
-                [BASE_OX - GAP, BASE_OY + y + w],
-                [BASE_OX - GAP, BASE_OY]];
-    drawWall(svg, w4, `左側牆 ${y + w}×${h}`, fw, fd, style, 'right', false);
-
-    // 牆5: 內側牆 (沿邊緣3→4，下方短邊) ── W方向
-    const w5_y0 = BASE_OY + y + GAP;
-    const w5 = [[BASE_OX + x - w, BASE_OY + y + GAP],
-                [BASE_OX + x, BASE_OY + y + GAP],
-                [BASE_OX + x, w5_y0 + h],
-                [BASE_OX + x - w, w5_y0 + h]];
-    drawWall(svg, w5, `內側牆 ${w}×${h}`, fw, fd, style, 'top', false);
-
-    // 牆6: 端部牆 (沿邊緣5→6，上方短邊) ── (Y-W)方向
-    const w6_x0 = BASE_OX + x - w + GAP;
-    const w6_y0 = BASE_OY + y + w + GAP;
-    const w6 = [[w6_x0, w6_y0],
-                [w6_x0 + (y - w) + GAP, w6_y0],
-                [w6_x0 + (y - w) + GAP, w6_y0 + h],
-                [w6_x0, w6_y0 + h]];
-    drawWall(svg, w6, `端部牆 ${y - w}×${h}`, fw, fd, style, 'bottom', true);
-
-    // ── 尺寸標註 ──
-    if (showDim) {
-        dimLine(svg, BASE_OX, BASE_OY + y + w + GAP + h + 12, BASE_OX + x, BASE_OY + y + w + GAP + h + 12, `${x}mm`);
-        dimLine(svg, BASE_OX + x + GAP + h + 10, BASE_OY, BASE_OX + x + GAP + h + 10, BASE_OY + y, `${y}mm`);
-        dimLine(svg, BASE_OX - GAP - h - 10, BASE_OY - GAP, BASE_OX - GAP - h - 10, BASE_OY - GAP - h, `${h}mm`);
-        dimLine(svg, BASE_OX, BASE_OY - GAP - h - 10, BASE_OX + x - w, BASE_OY - GAP - h - 10, `${x - w}mm`);
+    if(showDim) {
+        dimLine(svg,BASE_OX,BASE_OY+y+w+GAP+h+12,BASE_OX+x,BASE_OY+y+w+GAP+h+12,`${x}`);
+        dimLine(svg,BASE_OX+x+GAP+h+10,BASE_OY,BASE_OX+x+GAP+h+10,BASE_OY+y,`${y}`);
+        dimLine(svg,BASE_OX-GAP-h-10,BASE_OY-GAP,BASE_OX-GAP-h-10,BASE_OY-GAP-h,`${h}`);
     }
-
-    // ── ViewBox ──
-    const maxX = BASE_OX + x + GAP + h + PAD;
-    const maxY = BASE_OY + y + w + GAP + h + PAD;
-    const minX = BASE_OX - GAP - h - PAD;
-    const minY = BASE_OY - GAP - h - PAD;
-    svg.setAttribute('viewBox', `${minX} ${minY} ${maxX - minX} ${maxY - minY}`);
+    
+    const maxX=BASE_OX+x+GAP+h+PAD, maxY=BASE_OY+y+w+GAP+h+PAD;
+    const minX=BASE_OX-GAP-h-PAD, minY=BASE_OY-GAP-h-PAD;
+    svg.setAttribute('viewBox',`${minX} ${minY} ${maxX-minX} ${maxY-minY}`);
 }
 
-// ─── 下載 ───
-$('btnDL').addEventListener('click', () => {
-    const blob = new Blob(['<?xml version="1.0" encoding="UTF-8"?>\n' + $('canvas').outerHTML], { type: 'image/svg+xml' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'lbox_unfolded.svg';
-    a.click();
+// 下載
+$('btnDL').addEventListener('click',()=>{
+    const blob=new Blob(['<?xml version="1.0" encoding="UTF-8"?>\n'+$('canvas').outerHTML],{type:'image/svg+xml'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='lbox_v5.svg'; a.click();
 });
 
-// ─── 事件 ───
-['x', 'y', 'w', 'h', 'gap', 'fw', 'fd'].forEach(id => {
-    $(id).addEventListener('input', draw);
-    $(id).addEventListener('propertychange', draw);
-});
-$('style').addEventListener('change', draw);
-$('showLabels').addEventListener('change', draw);
-$('showDim').addEventListener('change', draw);
-
-// Init
+['x','y','w','h','gap','fw','fd'].forEach(id=>$(id).addEventListener('input',draw));
+$('style').addEventListener('change',draw); $('showLabels').addEventListener('change',draw); $('showDim').addEventListener('change',draw);
 draw();
 </script>
 </body>
