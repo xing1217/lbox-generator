@@ -163,12 +163,12 @@ function drawLFingerJoint(x, y, bw, ih, iw, rh, tw, lh, t, fj, colFace, colEdge,
   stroke(colEdge);
   strokeWeight(1.5);
   noFill();
-  drawFingerEdge(0, 0, bw, fj, 'h');
-  drawFingerEdge(0, 0, ih, fj, 'v');
-  drawFingerEdge(iw - fj, ih, iw, fj, 'h');
-  drawFingerEdge(tw, ih, rh, fj, 'v');
-  drawFingerEdge(tw, lh, tw, fj, 'h');
-  drawFingerEdge(0, lh, lh, fj, 'v');
+  drawFingerEdge(0, 0, bw, fj, 'h');           // 底部 (bw)
+  drawFingerEdge(bw, 0, ih, fj, 'v');           // 右內垂直 (ih)
+  drawFingerEdge(bw, ih, iw, fj, 'h');         // 內部水平 (iw)
+  drawFingerEdge(tw, ih, rh, fj, 'v');         // 右外垂直 (rh)
+  drawFingerEdge(0, lh, tw, fj, 'h');          // 上方 (tw) — 左到右
+  drawFingerEdge(0, lh, lh, fj, 'v');          // 左側 (lh)
   noStroke();
   fill(colFace);
   beginShape();
